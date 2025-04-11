@@ -25,7 +25,7 @@ main.Parent = gui
 Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
 
 local title = Instance.new("TextLabel", main)
-title.Text = "Fling Gui V1"
+title.Text = "Fling Gui V1.2"
 title.Size = UDim2.new(1, 0, 0, 30)
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -65,22 +65,6 @@ flingBtn.Font = Enum.Font.GothamBold
 flingBtn.TextScaled = true
 Instance.new("UICorner", flingBtn).CornerRadius = UDim.new(0, 6)
 
--- Add the potato button
-local potatoBtn = Instance.new("TextButton", main)
-potatoBtn.Text = "🥔"
-potatoBtn.Size = UDim2.new(0, 30, 0, 30)  -- Small size
-potatoBtn.Position = UDim2.new(0, 500, 0, 10)  -- Position it at the top-right
-potatoBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- White background to make it noticeable
-potatoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
-potatoBtn.Font = Enum.Font.GothamBold
-potatoBtn.TextScaled = true
-Instance.new("UICorner", potatoBtn).CornerRadius = UDim.new(0, 6)
-
--- Function to kick the player with a potato message
-potatoBtn.MouseButton1Click:Connect(function()
-    game.Players.LocalPlayer:Kick("🥔")  -- Kick with a message containing the potato emoji
-end)
-
 local credits = Instance.new("TextLabel", main)
 credits.Text = "Made By : TheEpicGamer16YT\nTested By : Dorinel2020t"
 credits.Size = UDim2.new(1, -10, 0, 40)
@@ -94,7 +78,7 @@ credits.TextWrapped = true
 local function notify(msg)
     pcall(function()
         game.StarterGui:SetCore("SendNotification", {
-            Title = "Fling Gui V1",
+            Title = "Fling Gui V1.2",
             Text = msg,
             Duration = 3
         })
