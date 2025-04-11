@@ -122,7 +122,7 @@ local function refreshPlayers()
     end
 end
 
-
+-- Update the player list every 3 seconds
 task.spawn(function()
     while gui.Parent do
         refreshPlayers()
@@ -147,9 +147,10 @@ local function flingTarget(target)
     local thrp = tchar:FindFirstChild("HumanoidRootPart")
     if not thrp then return end
 
-    local connection
+    local originalCFrame = hrp.CFrame
     local timer = 0
     local duration = 7  -- 7 second fling duration
+    local connection
 
     -- (Optional) Break joints to ensure physics override – adjust if needed.
     char:BreakJoints()
@@ -160,11 +161,12 @@ local function flingTarget(target)
             connection:Disconnect()
             task.wait(0.2)
 
-            -- Reset the character after fling by setting health to 0.
+            -- Reset health to 0 to "die" and respawn character
             if LocalPlayer.Character then
-                local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+                local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
                 if humanoid then
-                    humanoid.Health = 0  -- Set health to 0 to reset the character (die)
+                    humanoid.Health = 0  -- Set health to 0 to trigger respawn
+                    notify("You have been reset!")
                 end
             end
         else
