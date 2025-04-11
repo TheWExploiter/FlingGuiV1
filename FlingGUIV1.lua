@@ -122,7 +122,7 @@ local function refreshPlayers()
     end
 end
 
--- Update the player list every 2 seconds
+
 task.spawn(function()
     while gui.Parent do
         refreshPlayers()
@@ -160,14 +160,12 @@ local function flingTarget(target)
             connection:Disconnect()
             task.wait(0.2)
 
-            -- Reset the character after fling by reloading it.
+            -- Reset the character after fling by setting health to 0.
             if LocalPlayer.Character then
-                -- Destroy the character and respawn it to fully reset
-                LocalPlayer.Character:Destroy()
-
-                -- Wait for respawn and set the character back
-                LocalPlayer.CharacterAdded:Wait()
-                notify("Character reset complete.")
+                local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.Health = 0  -- Set health to 0 to reset the character (die)
+                end
             end
         else
             -- Aim directly at the target's HRP position with an offset and full chaos spin
