@@ -1,199 +1,122 @@
--- Fling Gui V1 | Made By: TheEpicGamer16YT | Tested By: Dorinel2020t
-
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+local hrp = player.Character:WaitForChild("HumanoidRootPart")
+local frame = script.Parent
+local mainFrame = frame:WaitForChild("MainFrame")
 
-local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "FlingGui"
+local collisionStatus = Instance.new("TextLabel")
+collisionStatus.Name = "CollisionStatus"
+collisionStatus.Size = UDim2.new(0, 180, 0, 25)
+collisionStatus.Position = UDim2.new(1, -190, 0, 5)
+collisionStatus.BackgroundTransparency = 1
+collisionStatus.TextScaled = true
+collisionStatus.Font = Enum.Font.GothamSemibold
+collisionStatus.Text = "Checking collisions..."
+collisionStatus.TextColor3 = Color3.fromRGB(255, 255, 255)
+collisionStatus.TextStrokeTransparency = 0.5
+collisionStatus.Parent = frame
 
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 500, 0, 300)
-frame.Position = UDim2.new(0.5, -250, 0.5, -150)
-frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-frame.Active = true
-frame.Draggable = true
-frame.BorderSizePixel = 0
+local function arePlayersCollidable()
+    local tempPart = Instance.new("Part")
+    tempPart.Size = Vector3.new(2, 2, 2)
+    tempPart.Position = hrp.Position + Vector3.new(0, 5, 0)
+    tempPart.Anchored = false
+    tempPart.CanCollide = true
+    tempPart.Parent = workspace
 
-Instance.new("UICorner", frame)
+    local touching = tempPart:GetTouchingParts()
+    local collides = false
+    for _, part in ipairs(touching) do
+        local pChar = part:FindFirstAncestorOfClass("Model")
+        if pChar and Players:GetPlayerFromCharacter(pChar) then
+            collides = true
+            break
+        end
+    end
+    tempPart:Destroy()
 
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 30)
-title.BackgroundTransparency = 1
-title.Text = "Fling Gui V1.2"
-title.TextColor3 = Color3.new(1,1,1)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 20
+    if collides then
+        collisionStatus.Text = "Collisions: ENABLED"
+        collisionStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
+    else
+        collisionStatus.Text = "Collisions: DISABLED"
+        collisionStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end
+end
 
-local sidebar = Instance.new("ScrollingFrame", frame)
-sidebar.Size = UDim2.new(0, 150, 1, -30)
-sidebar.Position = UDim2.new(0, 0, 0, 30)
-sidebar.CanvasSize = UDim2.new(0, 0, 0, 0)
-sidebar.ScrollBarThickness = 4
-sidebar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Instance.new("UICorner", sidebar)
+arePlayersCollidable()
 
-local selectedBox = Instance.new("TextBox", frame)
-selectedBox.Size = UDim2.new(0, 200, 0, 30)
-selectedBox.Position = UDim2.new(0, 160, 0, 40)
-selectedBox.PlaceholderText = "Selected player..."
-selectedBox.Text = ""
-selectedBox.TextColor3 = Color3.new(1,1,1)
-selectedBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-Instance.new("UICorner", selectedBox)
+local flingButton = Instance.new("TextButton")
+flingButton.Size = UDim2.new(0, 200, 0, 50)
+flingButton.Position = UDim2.new(0.5, -100, 0.8, 0)
+flingButton.Text = "Fling!"
+flingButton.TextScaled = true
+flingButton.Font = Enum.Font.GothamSemibold
+flingButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+flingButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+flingButton.Parent = mainFrame
 
-local flingBtn = Instance.new("TextButton", frame)
-flingBtn.Size = UDim2.new(0, 100, 0, 30)
-flingBtn.Position = UDim2.new(0, 160, 0, 80)
-flingBtn.Text = "Fling!"
-flingBtn.TextColor3 = Color3.new(1,1,1)
-flingBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-Instance.new("UICorner", flingBtn)
-
-local credits = Instance.new("TextBox", frame)
-credits.Size = UDim2.new(0, 200, 0, 50)
-credits.Position = UDim2.new(0, 160, 1, -60)
-credits.Text = "Made By : TheEpicGamer16YT\nTested By : Dorinel2020t"
-credits.TextColor3 = Color3.new(1,1,1)
-credits.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-credits.TextXAlignment = Enum.TextXAlignment.Left
-credits.TextYAlignment = Enum.TextYAlignment.Top
-credits.ClearTextOnFocus = false
-credits.TextEditable = false
-credits.Font = Enum.Font.Code
-Instance.new("UICorner", credits)
-
-local potatoBtn = Instance.new("TextButton", frame)
-potatoBtn.Size = UDim2.new(0, 30, 0, 30)
-potatoBtn.Position = UDim2.new(1, -35, 0, 5)
-potatoBtn.Text = "🥔"
-potatoBtn.BackgroundColor3 = Color3.fromRGB(100, 60, 30)
-Instance.new("UICorner", potatoBtn)
-
-potatoBtn.MouseButton1Click:Connect(function()
-    LocalPlayer:Kick("🥔")
+flingButton.MouseButton1Click:Connect(function()
+    local targetPlayer = -- get selected player
+    if targetPlayer then
+        local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if targetHRP then
+            player.Character:MoveTo(targetHRP.Position)
+            local startTime = tick()
+            while tick() - startTime < 7 do
+                player.Character:SetPrimaryPartCFrame(targetHRP.CFrame * CFrame.Angles(0, math.rad(10), 0))
+                wait(0.1)
+            end
+            player.Character:SetPrimaryPartCFrame(hrp.CFrame)
+        end
+    end
 end)
 
--- Notification
-function notify(text)
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "Fling Gui V1.2",
-        Text = text,
-        Duration = 3
-    })
-end
+local potatoButton = Instance.new("TextButton")
+potatoButton.Size = UDim2.new(0, 40, 0, 40)
+potatoButton.Position = UDim2.new(1, -50, 0, 50)
+potatoButton.Text = "🥔"
+potatoButton.TextScaled = true
+potatoButton.Font = Enum.Font.GothamSemibold
+potatoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+potatoButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+potatoButton.Parent = mainFrame
 
--- Fling function
-local function flingTarget(target)
-    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local hrp = char:WaitForChild("HumanoidRootPart")
-    local tchar = target.Character
-    if not tchar then return end
+potatoButton.MouseButton1Click:Connect(function()
+    player:Kick("🥔")
+end)
 
-    local thrp = tchar:FindFirstChild("HumanoidRootPart")
-    if not thrp then return end
+local playerListFrame = Instance.new("ScrollingFrame")
+playerListFrame.Size = UDim2.new(0, 200, 0, 200)
+playerListFrame.Position = UDim2.new(0, 10, 0, 50)
+playerListFrame.ScrollBarThickness = 10
+playerListFrame.BackgroundTransparency = 1
+playerListFrame.Parent = mainFrame
 
-    -- Collision detection
-    local function arePlayersCollidable()
-        local tempPart = Instance.new("Part")
-        tempPart.Size = Vector3.new(2, 2, 2)
-        tempPart.Position = hrp.Position + Vector3.new(0, 5, 0)
-        tempPart.Anchored = false
-        tempPart.CanCollide = true
-        tempPart.Parent = workspace
+local function updatePlayerList()
+    playerListFrame:ClearAllChildren()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player then
+            local playerButton = Instance.new("TextButton")
+            playerButton.Size = UDim2.new(0, 180, 0, 40)
+            playerButton.Text = p.Name
+            playerButton.TextScaled = true
+            playerButton.Font = Enum.Font.GothamSemibold
+            playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            playerButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+            playerButton.Parent = playerListFrame
 
-        local touching = tempPart:GetTouchingParts()
-        local collides = false
-        for _, part in ipairs(touching) do
-            local pChar = part:FindFirstAncestorOfClass("Model")
-            if pChar and Players:GetPlayerFromCharacter(pChar) then
-                collides = true
-                break
-            end
-        end
-        tempPart:Destroy()
-        return collides
-    end
-
-    if arePlayersCollidable() then
-        notify("Collisions with players: ENABLED")
-    else
-        notify("Collisions with players: DISABLED")
-    end
-
-    local timer = 0
-    local duration = 7
-    local connection
-
-    char:BreakJoints()
-
-    connection = RunService.Heartbeat:Connect(function(dt)
-        timer += dt
-        if timer >= duration then
-            connection:Disconnect()
-            notify("Resetting...")
-            task.wait(0.25)
-            LocalPlayer.Character:BreakJoints()
-        else
-            local targetPos = thrp.Position + Vector3.new(0, 2, 0)
-            hrp.CFrame = CFrame.new(targetPos) * CFrame.Angles(
-                math.rad(math.random(0, 360)),
-                math.rad(math.random(0, 360)),
-                math.rad(math.random(0, 360))
-            )
-            hrp.AssemblyAngularVelocity = Vector3.new(
-                math.random(-10000, 10000),
-                math.random(-10000, 10000),
-                math.random(-10000, 10000)
-            )
-            hrp.AssemblyLinearVelocity = Vector3.new(100, 100, 100)
-        end
-    end)
-end
-
--- Update sidebar with all players
-function updatePlayerList()
-    sidebar:ClearAllChildren()
-    for i, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer then
-            local btn = Instance.new("TextButton", sidebar)
-            btn.Size = UDim2.new(1, -10, 0, 40)
-            btn.Position = UDim2.new(0, 5, 0, (i-1)*45)
-            btn.Text = "  "..plr.Name
-            btn.TextColor3 = Color3.new(1,1,1)
-            btn.TextXAlignment = Enum.TextXAlignment.Left
-            btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            Instance.new("UICorner", btn)
-
-            local thumb = Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
-            local img = Instance.new("ImageLabel", btn)
-            img.Image = thumb
-            img.Size = UDim2.new(0, 30, 0, 30)
-            img.Position = UDim2.new(0, 5, 0.5, -15)
-            img.BackgroundTransparency = 1
-
-            btn.MouseButton1Click:Connect(function()
-                selectedBox.Text = plr.Name
-            end)
+            local avatarImage = Instance.new("ImageLabel")
+            avatarImage.Size = UDim2.new(0, 30, 0, 30)
+            avatarImage.Position = UDim2.new(0, 5, 0, 5)
+            avatarImage.Image = "https://www.roblox.com/bust-thumbnail/image?userId=" .. p.UserId .. "&width=100&height=100&format=png"
+            avatarImage.Parent = playerButton
         end
     end
 end
 
-updatePlayerList()
-Players.PlayerAdded:Connect(updatePlayerList)
-Players.PlayerRemoving:Connect(updatePlayerList)
 while true do
     updatePlayerList()
-    task.wait(3)
+    wait(3)
 end
-
-flingBtn.MouseButton1Click:Connect(function()
-    local name = selectedBox.Text
-    local target = Players:FindFirstChild(name)
-    if target then
-        flingTarget(target)
-    else
-        notify("Player not found!")
-    end
-end)
