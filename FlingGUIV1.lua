@@ -25,7 +25,7 @@ main.Parent = gui
 Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
 
 local title = Instance.new("TextLabel", main)
-title.Text = "Fling Gui V1.2"
+title.Text = "Fling Gui V1"
 title.Size = UDim2.new(1, 0, 0, 30)
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -78,7 +78,7 @@ credits.TextWrapped = true
 local function notify(msg)
     pcall(function()
         game.StarterGui:SetCore("SendNotification", {
-            Title = "Fling Gui V1.2",
+            Title = "Fling Gui V1",
             Text = msg,
             Duration = 3
         })
@@ -160,10 +160,14 @@ local function flingTarget(target)
         if timer >= duration then
             connection:Disconnect()
             task.wait(0.2)
+            
+            -- Reset character position after fling
             if LocalPlayer.Character then
                 LocalPlayer.Character:SetPrimaryPartCFrame(originalCFrame)
+                -- Reset the player's character position after fling
+                LocalPlayer.Character:BreakJoints()
+                notify("Returned to original position.")
             end
-            notify("Returned to original position.")
         else
             -- Aim directly at the target's HRP position with an offset and full chaos spin
             local targetPos = thrp.Position + Vector3.new(0, 2, 0)
