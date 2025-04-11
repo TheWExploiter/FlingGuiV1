@@ -122,7 +122,7 @@ local function refreshPlayers()
     end
 end
 
--- Update the player list every 3 seconds
+-- Update the player list every 2 seconds
 task.spawn(function()
     while gui.Parent do
         refreshPlayers()
@@ -147,10 +147,9 @@ local function flingTarget(target)
     local thrp = tchar:FindFirstChild("HumanoidRootPart")
     if not thrp then return end
 
-    local originalCFrame = hrp.CFrame
+    local connection
     local timer = 0
     local duration = 7  -- 7 second fling duration
-    local connection
 
     -- (Optional) Break joints to ensure physics override – adjust if needed.
     char:BreakJoints()
@@ -160,13 +159,15 @@ local function flingTarget(target)
         if timer >= duration then
             connection:Disconnect()
             task.wait(0.2)
-            
-            -- Reset character position after fling
+
+            -- Reset the character after fling by reloading it.
             if LocalPlayer.Character then
-                LocalPlayer.Character:SetPrimaryPartCFrame(originalCFrame)
-                -- Reset the player's character position after fling
-                LocalPlayer.Character:BreakJoints()
-                notify("Returned to original position.")
+                -- Destroy the character and respawn it to fully reset
+                LocalPlayer.Character:Destroy()
+
+                -- Wait for respawn and set the character back
+                LocalPlayer.CharacterAdded:Wait()
+                notify("Character reset complete.")
             end
         else
             -- Aim directly at the target's HRP position with an offset and full chaos spin
